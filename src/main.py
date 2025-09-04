@@ -123,15 +123,16 @@ def main():
         logging.info("キーボードデータを正常に読み込みました。")
     except Exception:
         logging.exception("キーボードデータの読み込みに失敗しました。") # 例外情報をログに出力
-        logging.warning("ダミーキーボードデータを使用します。")
-        # ダミーのキーボードデータ
-        class DummyKey:
-            def __init__(self, x, y, width, height, keycode):
-                self.x, self.y, self.width, self.height, self.keycode = x, y, width, height, keycode
-        class DummyKeyboard:
-            def __init__(self): self.keys = [DummyKey(0.1,0.1,0.1,0.1,"A")]
-            def normalize(self): pass
-        keyboard = DummyKeyboard()
+        exit()
+        # logging.warning("ダミーキーボードデータを使用します。")
+        # # ダミーのキーボードデータ
+        # class DummyKey:
+        #     def __init__(self, x, y, width, height, keycode):
+        #         self.x, self.y, self.width, self.height, self.keycode = x, y, width, height, keycode
+        # class DummyKeyboard:
+        #     def __init__(self): self.keys = [DummyKey(0.1,0.1,0.1,0.1,"A")]
+        #     def normalize(self): pass
+        # keyboard = DummyKeyboard()
 
     hand_tracker = HandTracker()
     keyboard_mapper = KeyboardMapper(keyboard, KEYBOARD_CORNERS)
@@ -175,17 +176,20 @@ def main():
             
             hand_tracker.draw_landmarks(frame, results)
             
-            for hand in finger_positions:
-                for tip_id, x, y in hand['fingers']:
-                    if tip_id == 8: # 人差し指
-                        cv2.putText(frame, f"{x},{y}", (x-20, y-10),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+            # for hand in finger_positions:
+            #     for tip_id, x, y in hand['fingers']:
+            #         if tip_id == 8: # 人差し指
+            #             cv2.putText(frame, f"{x},{y}", (x-20, y-10),
+            #                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
             
-            keyboard_mapper.draw_keyboard(frame, finger_positions)
+            # keyboard_mapper.draw_keyboard(frame, finger_positions)
             
-            keyboard_corners_np = np.array(KEYBOARD_CORNERS, np.int32).reshape((-1, 1, 2))
-            cv2.polylines(frame, [keyboard_corners_np], True, (255, 255, 0), 1)
+            # keyboard_corners_np = np.array(KEYBOARD_CORNERS, np.int32).reshape((-1, 1, 2))
+            # cv2.polylines(frame, [keyboard_corners_np], True, (255, 255, 0), 1)
             
+            # 4. KeyboardMapperに描画と情報出力をまとめて依頼
+            keyboard_mapper.draw_keyboard_and_finger_info(frame, finger_positions)
+
             cv2.imshow('Hand Tracking with Virtual Keyboard', frame)
             
             if cv2.waitKey(1) & 0xFF == ord('q'):
